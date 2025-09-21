@@ -22,9 +22,9 @@ class AutoImMsg extends \app\BaseController
 {
     protected $noNeedLogin = ['*'];
 
-    protected $imUrl = "http://8.217.36.197:21002/api";
-    protected $senderNickname = "http://8.217.36.197:21002/api";
-    protected $senderFaceURL = "http://8.217.36.197:21002/api";
+    protected $imUrl = "http://47.83.135.58:21002/api";
+    protected $senderNickname = "番茄电商";
+    protected $senderFaceURL = "http://www.head.com";
 
     protected function initialize()
     {
@@ -76,19 +76,45 @@ class AutoImMsg extends \app\BaseController
         // print($resToken);
 
         Db::startTrans();
+
+
+        //    {
+        //         "clientMsgID": "c177a72eb22e5a3afa71bf0ff25c5687",
+        //         "createTime": 1758453488427,
+        //         "sendTime": 1758453488427,
+        //         "sessionType": 0,
+        //         "sendID": "1894780926",
+        //         "msgFrom": 100,
+        //         "contentType": 110,
+        //         "senderPlatformID": 2,
+        //         "senderNickname": "13844444444",
+        //         "senderFaceUrl": "http://cs.tomaoto3.cc/object/1894780926/1755698559723png",
+        //         "seq": 0,
+        //         "isRead": false,
+        //         "status": 1,
+        //         "customElem": {
+        //             "data": "{\"number\":\"1\",\"totalMoney\":\"1\",\"sendID\":\"1894780926\",\"nickname\":\"13844444444\",\"faceURL\":\"http://cs.tomaoto3.cc/object/1894780926/1755698559723png\",\"type\":\"REDPACKET\"}",
+        //             "description": "SEND",
+        //             "extension": "REDPACKET"
+        //         }
+        //     }
+
+
         try {
             $param = [
-                "sendID" => $sendId,
-                "recvID" => "",
-                "groupID" => $groupId,
+                "sendID" => $sendId . "",
+                "recvID" => "", // "1894780926",
+                "groupID" => $groupId . "",
                 "senderNickname" => $this->senderNickname, // "openIMAdmin-Gordon",
                 "senderFaceURL" => $this->senderFaceURL,
                 "senderPlatformID" => 1,
                 "content" => [
-                    "content" => $money
+                    "data" =>  "{\"number\":\"1\",\"totalMoney\":\"$money\",\"sendID\":\"$sendId\",\"nickname\":\"番茄电商\",\"faceURL\":\"http://cs.tomaoto3.cc/object/1894780926/1755698559723png\",\"type\":\"REDPACKET\"}",
+                    "description" => "SEND",
+                    "extension" => "REDPACKET"
                 ],
-                "contentType" => 101,
-                "sessionType" => 3,
+                "contentType" => 110,
+                "sessionType" => 3, // 1:个人，3 群消息
                 "isOnlineOnly" => false,
                 "notOfflinePush" => false,
                 // "sendTime": 1695212630740,
@@ -99,7 +125,7 @@ class AutoImMsg extends \app\BaseController
                     "iOSPushSound" => "default",
                     "iOSBadgeCount" => true
                 ],
-                "ex" => "ex",
+                  
             ];
             $url = $this->imUrl . '/msg/send_msg';
             $resSend = $this->request($param, $url, $token);

@@ -6,6 +6,9 @@ use think\annotation\route\Group;
 use think\annotation\route\Route;
 use app\model\imext\ImExtUserModel;
 
+use think\facade\Db;   // 引入 Db 门面
+use app\utils\Logger;
+
 #[Group('imext/users')]
 class Users extends \app\BaseController
 {
@@ -51,11 +54,29 @@ class Users extends \app\BaseController
     {
         $data = $this->request->param();
 
+        // 生成唯一邀请码
+        do {
+            $c_code = $this->generateInviteCode();
+            $exists = Db::name('imext_user')->where('invitation_code', $c_code)->find();
+        } while ($exists);
+
+        $user = Db::name('imext_user')
+            ->field('id, username, c_code')
+            ->where('invitation_code',  $data["referrerId"])
+            ->find();
+
+        if ($user) {
+            $referrer_id = $user["userId"];
+        } else {
+            $referrer_id = "";
+        }
+
         $editdata = [
             'user_id' =>  $data["userID"],
             'user_name' =>  $data["userName"],
-            'referrer_id' =>  $data["referrerId"],
+            'referrer_id' => $referrer_id,
             'create_time' =>  date('Y-m-d H:i:s'),
+            'invitation code' => $c_code,
         ];
 
         $r = $this->model->create($editdata);
@@ -92,5 +113,15 @@ class Users extends \app\BaseController
             $this->error('操作失败');
         }
         $this->success();
+    }
+
+    function generateInviteCode($length = 4)
+    {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $code = '';
+        for ($i = 0; $i < $length; $i++) {
+            $code .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+        return $code;
     }
 }

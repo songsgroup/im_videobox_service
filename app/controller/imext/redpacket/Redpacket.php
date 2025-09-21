@@ -362,7 +362,7 @@ class Redpacket extends \app\BaseController
         // $operator = cache($access_id.'admin_name');
 
         $time = date("Y-m-d H:i:s");
-        $in_user_id = $this->user_list['user_id'];
+
 
         $remark = "";
 
@@ -372,44 +372,33 @@ class Redpacket extends \app\BaseController
             $message = Lang('label.0');
 
             return json([
-                'code' => 109,
-                'errCode' => 200,
+                'code' => -99,
+                'errCode' => -99,
                 'errMsg' => "client_msg_id不能为空！",
                 'msg' => ""
             ]);
         }
 
-
         if ($client_msg_id != '' && $client_msg_id != 0) {
+            $r0 = Db::name('imext_redpacket_send')->where("client_msg_id", $client_msg_id)->select()->toArray();
 
-            $r1 = Db::name('imext_redpacket_send')->where("client_msg_id", $client_msg_id)->select()->toArray();
-            if ($r1) {
+            if ($r0) {
                 Db::startTrans();
+                $userId = $r0[0]["user_id"];
+                $money = $r0[0]["total_money"];
                 try {
-                    $total_money = $r1[0]["total_money"];
-                    $red_num = $r1[0]["red_num"];
-                    $money = $total_money / $red_num;
-
-                    $out_user_id = $r1[0]["shop_id"];
-
-                    $sql1 = array('client_msg_id' => $client_msg_id, 'rcv_id' => $rcv_id, 'money' => $money, 'status' => -1, 'create_at' => $time, 'remark' => $remark);
-                    $r1 = Db::name('imext_redpacket_receive')->insertGetId($sql1);
 
 
                     //增加接受者钱
-                    $r1 = Db::name('imext_user')->where(["user_id" => $out_user_id])->update(['money' => Db::raw('money + ' . $money)]);
+                    $r1 = Db::name('imext_user')->where(["user_id" => $userId])->update(['money' => Db::raw('money + ' . $money)]);
 
-                    $r3 = Db::name('imext_redpacket_send')->where("client_msg_id", $client_msg_id)->select()->toArray();
+                    $r2 = Db::name('imext_redpacket_send')->where(["client_msg_id" => $client_msg_id])->update(['status' => 2]);
 
                     Db::commit();
 
-                    if ($r3) {
-                        $receive_money = $r3[0]["receive_money"];
-                    }
-
                     if ($r1 == -1) {
                         // $Jurisdiction->admin_record($store_id, $operator, '修改了二维码管理ID：'.$client_msg_id.' 的信息失败',2,1,0,$operator_id);
-                        $Log_content = __METHOD__ . '->' . __LINE__ . ' 修改失败！参数:' . json_encode($sql1);
+                        $Log_content = __METHOD__ . '->' . __LINE__ . ' 修改失败！参数:' ;
                         Logger::Log($Log_content);
                         $message = Lang('label.2');
                         //return output(109,$message);
@@ -432,7 +421,7 @@ class Redpacket extends \app\BaseController
                             'errCode' => 200,
                             'errMsg' => "拒收红包成功",
                             'money' => 0,
-                            'receiveMoney' => $receive_money,
+                            'receiveMoney' => $money,
                             'msg' => "成功"
                         ]);
                     }
