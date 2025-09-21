@@ -1,0 +1,226 @@
+<?="<?php\n"?>
+declare (strict_types = 1);
+
+namespace <?=$namespace['controller']?>;
+
+use think\annotation\route\Route;
+use think\annotation\route\Group;
+use app\PreAuthorize;
+use <?=$namespace['model']?>\<?=$ClassName?>Model;
+use think\helper\Str;
+
+/**
+ * <?=$classNames['controller'],"\n"?>
+ *
+ * @author <?=$author,"\n"?>
+ * @version <?=$datetime,"\n"?>
+ */
+#[Group('<?=$namespace['routegroup']?>')]
+class <?=$classNames['controller']?> extends \app\BaseController
+{
+    protected $noNeedLogin = [];
+
+    protected function initialize()
+    {
+        parent::initialize();
+        $this->model = new <?=$ClassName?>Model;
+    }
+
+    /**
+     * add
+     *
+     * @author <?=$author,"\n"?>
+     * @version <?=$datetime,"\n"?>
+     */
+    #[Route('POST','$')]
+    #[PreAuthorize('hasPermi','<?=$permissionPrefix?>:add')]
+    public function add()
+    {
+        $data = $this->request->param();
+        $r = $this->model->create($data);
+        if (!$r) {
+            $this->error('保存失败');
+        }
+        $this->success();
+    }
+
+    /**
+     * remove
+     *
+     * @author <?=$author,"\n"?>
+     * @version <?=$datetime,"\n"?>
+     */
+    #[Route('DELETE','<ids>')]
+    #[PreAuthorize('hasPermi','<?=$permissionPrefix?>:remove')]
+    public function remove($ids)
+    {
+        $ids = explode(',',$ids);
+        $data = $this->model->select($ids);
+        if (!$data) {
+            $this->error('资源不存在');
+        }
+        $r = $data->delete();
+        if (!$r) {
+            $this->error('操作失败');
+        }
+        $this->success();
+    }
+
+    /**
+     * edit
+     *
+     * @author <?=$author,"\n"?>
+     * @version <?=$datetime,"\n"?>
+     */
+    #[Route('PUT','$')]
+    #[PreAuthorize('hasPermi','<?=$permissionPrefix?>:edit')]
+    public function edit()
+    {
+        $id = input(Str::camel($this->model->getPk()),0);
+        $data = $this->model->find($id);
+        if (!$data) {
+            $this->error('资源不存在');
+        }
+        $r = $data->save($this->request->param());
+        if (!$r) {
+            $this->error('操作失败');
+        }
+        $this->success();
+    }
+
+    /**
+     * getInfo
+     *
+     * @author <?=$author,"\n"?>
+     * @version <?=$datetime,"\n"?>
+     */
+    #[Route('GET','<id>')]
+    #[PreAuthorize('hasPermi','<?=$permissionPrefix?>:query')]
+    public function getInfo($id)
+    {
+        $data = $this->model->find($id)->toArray();
+        $r = [
+            'data' => $data,
+        ];
+        $this->success($r);
+    }
+
+    /**
+     * list
+     *
+     * @author <?=$author,"\n"?>
+     * @version <?=$datetime,"\n"?>
+     */
+    #[Route('GET','list')]
+    #[PreAuthorize('hasPermi','<?=$permissionPrefix?>:list')]
+    public function list()
+    {
+        $where = [];
+<?foreach($columns as $column){
+    if(!$column['isQuery']) continue;
+?>
+<?if($column['htmlType'] == "datetime" && $column['queryType'] == "BETWEEN"){?>
+        $where['params'] = [];
+<?break;?>
+<?}?>
+<?}?>
+
+<?foreach($columns as $column){
+    if(!$column['isQuery']) continue;
+?>
+<?if($column['htmlType'] == "datetime" && $column['queryType'] == "BETWEEN"){?>
+<? $AttrName = ucfirst($column['javaField']); ?>
+        $where['params']['begin<?=$AttrName?>'] = input('params.begin<?=$AttrName?>/s','');
+        $where['params']['end<?=$AttrName?>'] = input('params.end<?=$AttrName?>/s','');
+<? }else{ ?>
+        $where['<?=$column['javaField']?>'] = input('<?=$column['javaField']?>',null);
+<? } ?>
+<?}?>
+
+<? if($table['isCrud'] || $table['isSub']) { ?>
+        $where['pageNum'] = input('pageNum/d',1);
+        $where['pageSize'] = input('pageSize/d',10);
+
+        $r = $this->model->search($where);
+<? }else{ ?>
+        $r = [
+            'data'=>$this->model->search($where)['rows'],
+        ];
+<? } ?>
+        $this->success($r);
+    }
+
+<? $hasStatus = in_array('status',array_column($columns,'javaField')); ?>
+<? if($hasStatus){ ?>
+    /**
+     * changeStatus
+     *
+     * @author 心衍
+     */
+    #[Route('PUT','changeStatus')]
+    #[PreAuthorize('hasPermi','<?=$permissionPrefix?>:edit')]
+    public function changeStatus()
+    {
+        $id = input(Str::camel($this->model->getPk()),0);
+        $status = input('status/d',0);
+
+        $data = $this->model->find($id);
+        $data->status = $status;
+        $r = $data->save();
+        if (!$r) {
+            $this->error('操作失败');
+        }
+
+        $this->success();
+    }
+<? } ?>
+
+<? if(in_array('relationSelect',array_column($columns,'htmlType'))){ ?>
+    /**
+     * selectOptions
+     *
+     * @author 心衍
+     */
+    #[Route('GET','selectOptions')]
+    #[PreAuthorize('hasPermi','<?=$permissionPrefix?>:list')]
+    public function selectOptions()
+    {
+        $field    = input('field','');
+        $ids      = input('ids','');
+        $title    = input('title','');
+        $page     = input('page/d',1);
+        $pageSize = input('pageSize/d',10);
+        $ids      = $ids?explode(',',$ids):[];
+
+        switch ($field) {
+<? foreach($columns as $column){ ?>
+<? if($column['htmlType'] == "relationSelect" && $column['dictType']){ ?>
+<? $relation = current(array_filter($relations,
+            fn($x)=>$x['foreignKey']==$column['columnName']));
+    if(str_contains($relation['model'],'::')){
+        $model = '\\'.$namespace['model'].'\\'.explode('::',$relation['model'])[0];
+    }else{
+        $model = $relation['model'];
+    }
+?>
+            case '<?=$column['javaField']?>':
+                $model = new <?=$model?>;
+                $show_field = '<?=$column['dictType']?>';
+                break;
+<? } ?>
+<? } ?>
+            default:
+                $this->error();
+        }
+
+        list($total,$rows) =  $model->getSelectOptions($show_field,$ids,$title,$page,$pageSize);
+
+        $this->success([
+                'total'=>$total,
+                'rows'=>$rows,
+            ]);
+    }
+<? } ?>
+
+}
+

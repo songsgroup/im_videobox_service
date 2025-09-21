@@ -1,0 +1,40 @@
+<?php
+
+return [
+    [
+        'name'   => 'username',
+        'title'  => '账号',
+        'type'   => 'string',
+        'content'=> [],
+        'value'  => 'username',
+        'rule'   => 'required',
+        'msg'    => '',
+        'tip'    => '',
+        'ok'     => '',
+        'extend' => '',
+    ],
+    [
+        'name'   => 'password',
+        'title'  => '密码',
+        'type'   => 'string',
+        'content'=> [],
+        'value'  => 'password',
+        'rule'   => 'required',
+        'msg'    => '',
+        'tip'    => '',
+        'ok'     => '',
+        'extend' => '',
+    ],
+    [
+        'name'   => 'sign',
+        'title'  => '短信签名',
+        'type'   => 'string',
+        'content'=> [],
+        'value'  => '【短信签名】',
+        'rule'   => 'required',
+        'msg'    => '',
+        'tip'    => '例如【启瑞云】',
+        'ok'     => '',
+        'extend' => '',
+    ],
+];

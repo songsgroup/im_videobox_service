@@ -1,0 +1,67 @@
+import request from '@/utils/request'
+
+
+// 查询<?=$functionName?>列表
+export function list<?=$ClassName?>(query) {
+    return request({
+        url: '<?=$namespace['vue']?>/list',
+        method: 'get',
+        params: query
+    })
+}
+
+// 查询<?=$functionName?>详细
+export function get<?=$ClassName?>(<?=$pkColumn['javaField']?>) {
+    return request({
+        url: '<?=$namespace['vue']?>/' + <?=$pkColumn['javaField']?>,
+        method: 'get'
+    })
+}
+
+// 查询<?=$functionName?>的关联字段的下拉框值
+export function get<?=$ClassName?>SelectOptions(query) {
+    return request({
+        url: '<?=$namespace['vue']?>/selectOptions',
+        method: 'get',
+        params: query
+    })
+}
+
+// 新增<?=$functionName,"\n"?>
+export function add<?=$ClassName?>(data) {
+    return request({
+        url: '<?=$namespace['vue']?>',
+        method: 'post',
+        data: data
+    })
+}
+
+// 修改<?=$functionName,"\n"?>
+export function update<?=$ClassName?>(data) {
+    return request({
+        url: '<?=$namespace['vue']?>',
+        method: 'put',
+        data: data
+    })
+}
+
+// 删除<?=$functionName,"\n"?>
+export function del<?=$ClassName?>(<?=$pkColumn['javaField']?>) {
+    return request({
+        url: '<?=$namespace['vue']?>/' + <?=$pkColumn['javaField']?>,
+        method: 'delete'
+    })
+}
+
+<? $hasStatus = in_array('status',array_column($columns,'javaField')); ?>
+<? if($hasStatus){ ?>
+// 修改<?=$functionName?>状态
+export function change<?=$ClassName?>Status(data) {
+    return request({
+        url: '<?=$namespace['vue']?>/changeStatus',
+        method: 'put',
+        data: data
+    })
+}
+<? } ?>
+

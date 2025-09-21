@@ -1,0 +1,7 @@
+<?="<?php\n"?>
+
+return [
+<?foreach($columns as $column){?>
+    '<?=$column['columnName']?>' => '<?=$column['columnComment']?>',
+<?}?>
+];

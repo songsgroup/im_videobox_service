@@ -1,0 +1,72 @@
+<?="<?php\n"?>
+declare (strict_types = 1);
+
+namespace <?=$namespace['model']?>;
+
+<? $relationsType = array_unique(array_column($relations,'type')); ?>
+<? foreach($relationsType as $type){ ?>
+use think\annotation\model\relation\<?=$type?>;
+<? } ?>
+
+/**
+ * <?=$classNames['model'],"\n"?>
+ *
+ * @author <?=$author,"\n"?>
+ * @version <?=$datetime,"\n"?>
+ */
+<?
+// #[belongsTo("category", CategoryModel::class, "category_id",'id')]
+?>
+<? foreach($relations as $relation){ ?>
+#[<?=$relation['type']?>('<?=$relation['name']?>', <?=str_contains($relation['model'],'::')?$relation['model']:"'{$relation['model']}'"?>, '<?=$relation['foreignKey']?>','<?=$relation['localKey']?>')]
+<? } ?>
+class <?=$classNames['model']?> extends \app\BaseModel
+{
+    // 表名
+<? if(str_starts_with($tableName,\think\facade\Db::connect()->getConfig('prefix'))){?>
+    protected $name = '<?=substr($tableName,strlen(\think\facade\Db::connect()->getConfig('prefix')))?>';
+<? }else{?>
+    protected $table = '<?=$tableName?>';
+<? }?>
+    protected $pk = '<?=$pkColumn['columnName']?>';
+
+<? $hasCreateTime = in_array('createTime',array_column($columns,'javaField')); ?>
+<? $hasUpdateTime = in_array('updateTime',array_column($columns,'javaField')); ?>
+<? $hasDeleteTime = in_array('deleteTime',array_column($columns,'javaField')); ?>
+<? if($hasCreateTime||$hasUpdateTime||$hasDeleteTime) { ?>
+<? $timeColumn = current(array_filter($columns,fn($x)=>in_array($x['javaField'],['createTime','updateTime','deleteTime']))); ?>
+    // 自动写入时间戳
+    protected $autoWriteTimestamp = <?=$timeColumn['columnType']=='datetime'?"'datetime'":"true"?>;
+    // 定义时间戳字段名
+    protected $createTime = <?=$hasCreateTime?"'create_time'":'false'?>;
+    protected $updateTime = <?=$hasUpdateTime?"'update_time'":'false'?>;
+    protected $deleteTime = <?=$hasDeleteTime?"'delete_time'":'false'?>;
+<? } ?>
+
+<? $columnNameLenMax = max(array_map(fn($x)=>strlen($x),array_column($columns,'columnName'))); ?>
+
+    protected $mapping = [
+<?foreach($columns as $column){?>
+            //'<?=$column['columnName']?>'<?=str_repeat(' ',$columnNameLenMax-strlen($column['columnName']))?> => '<?=$column['javaField']?>',
+<?}?>
+        ];
+    
+    // 字段默认值
+    protected $default = [
+<?foreach($columns as $column){?>
+            //'<?=$column['columnName']?>'<?=str_repeat(' ',$columnNameLenMax-strlen($column['columnName']))?> => '',
+<?}?>
+        ];
+
+<?
+    // 扩展字段获取器
+//    public function getStatusTextAttr()
+//    {
+//        return null;
+//    }
+?>
+
+    //search
+<?include __DIR__.DS.'model.php.search.stub'?>
+
+}

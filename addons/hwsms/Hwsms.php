@@ -1,0 +1,102 @@
+<?php
+
+namespace addons\hwsms;
+
+use think\Addons;
+
+/**
+ * 华为云短信
+ */
+class Hwsms extends Addons
+{
+
+    /**
+     * 插件安装方法
+     * @return bool
+     */
+    public function install()
+    {
+        return true;
+    }
+
+    /**
+     * 插件卸载方法
+     * @return bool
+     */
+    public function uninstall()
+    {
+        return true;
+    }
+
+    /**
+     * 插件启用方法
+     * @return bool
+     */
+    public function enable()
+    {
+        return true;
+    }
+
+    /**
+     * 插件禁用方法
+     * @return bool
+     */
+    public function disable()
+    {
+        return true;
+    }
+
+    /**
+     * 短信发送行为
+     * @param array $params 必须包含mobile,event,code
+     * @return  boolean
+     */
+    public function smsSend(&$params)
+    {
+        $config = get_addon_config('hwsms');
+        $hwsms = new \addons\hwsms\library\Hwsms();
+        $result = $hwsms->mobile($params['mobile'])
+            ->template($config['template'][$params['event']])
+            ->param(['code' => $params['code']])
+            ->send();
+        return $result;
+    }
+
+    /**
+     * 短信发送通知
+     * @param array $params 必须包含 mobile,event,msg
+     * @return  boolean
+     */
+    public function smsNotice(&$params)
+    {
+        $config = get_addon_config('hwsms');
+        $hwsms = \addons\hwsms\library\Hwsms::instance();
+        if (isset($params['msg'])) {
+            if (is_array($params['msg'])) {
+                $param = $params['msg'];
+            } else {
+                parse_str($params['msg'], $param);
+            }
+        } else {
+            $param = [];
+        }
+        $param = $param ? $param : [];
+        $params['template'] = isset($params['template']) ? $params['template'] : (isset($params['event']) && isset($config['template'][$params['event']]) ? $config['template'][$params['event']] : '');
+        $result = $hwsms->mobile($params['mobile'])
+            ->template($params['template'])
+            ->param($param)
+            ->send();
+          
+        return $result;
+    }
+
+    /**
+     * 检测验证是否正确
+     * @param   $params
+     * @return  boolean
+     */
+    public function smsCheck(&$params)
+    {
+        return true;
+    }
+}

@@ -1,0 +1,56 @@
+    public static function search($where=[])
+    {
+        extract($where);
+
+<?if(in_array('del_flag',array_column($columns,'columnName'))){?>
+        $m = self::where('del_flag',0);
+<?}else{?>
+        $m = new self;
+<?}?>
+<?foreach($columns as $column){
+$queryType=$column['queryType'];
+$javaField=$column['javaField'];
+$javaType=$column['javaType'];
+$columnName=$column['columnName'];
+$AttrName = ucfirst($column['javaField']);
+if(!$column['isQuery']) continue;
+?>
+<? if($queryType == 'EQ') { ?>
+        if(isset($<?=$column['javaField']?>) && $<?=$column['javaField']?>!=null && trim($<?=$column['javaField']?>)!='')
+            $m = $m->where('<?=$columnName?>','<?=$javaField?>');
+<? }elseif($queryType == 'NE'){ ?>
+        if(isset($<?=$column['javaField']?>) && $<?=$column['javaField']?>!=null && trim($<?=$column['javaField']?>)!='')
+            $m = $m->where('<?=$columnName?>','<>','<?=$javaField?>');
+<? }elseif($queryType == 'GT'){ ?>
+        if(isset($<?=$column['javaField']?>) && $<?=$column['javaField']?>!=null && trim($<?=$column['javaField']?>)!='')
+            $m = $m->where('<?=$columnName?>','>','<?=$javaField?>');
+<? }elseif($queryType == 'GTE'){ ?>
+        if(isset($<?=$column['javaField']?>) && $<?=$column['javaField']?>!=null && trim($<?=$column['javaField']?>)!='')
+            $m = $m->where('<?=$columnName?>','>=','<?=$javaField?>');
+<? }elseif($queryType == 'LT'){ ?>
+        if(isset($<?=$column['javaField']?>) && $<?=$column['javaField']?>!=null && trim($<?=$column['javaField']?>)!='')
+            $m = $m->where('<?=$columnName?>','<','<?=$javaField?>');
+<? }elseif($queryType == 'LTE'){ ?>
+        if(isset($<?=$column['javaField']?>) && $<?=$column['javaField']?>!=null && trim($<?=$column['javaField']?>)!='')
+            $m = $m->where('<?=$columnName?>','<=','<?=$javaField?>');
+<? }elseif($queryType == 'LIKE'){ ?>
+        if(isset($<?=$column['javaField']?>) && $<?=$column['javaField']?>!=null && trim($<?=$column['javaField']?>)!='')
+            $m = $m->where('<?=$columnName?>','like','%<?=$javaField?>%');
+<? }elseif($queryType == 'BETWEEN'){ ?>
+<? $AttrName=='CreateTime' && $AttrName='Time'; ?>
+        if(isset($params) && $params['begin<?=$AttrName?>'] && $params['end<?=$AttrName?>'])
+<? if($column['htmlType']=='datetime') { ?>
+            $m = $m->whereBetweenTime('<?=$columnName?>',$params['begin<?=$AttrName?>'],$params['end<?=$AttrName?>']);
+<? }else{ ?>
+            $m = $m->whereBetween('<?=$columnName?>',$params['begin<?=$AttrName?>'],$params['end<?=$AttrName?>']);
+<? } ?>
+<? } ?>
+<? } ?>
+
+        $total = $m->count();
+        if($pageNum??0 && $pageSize??0){
+            $m = $m->page($pageNum)->limit($pageSize);
+        }
+        $rows = $m->select()->toArray();
+        return ['total'=>$total,'rows'=>$rows];
+    }
