@@ -35,7 +35,7 @@ class AutoImMsg extends \app\BaseController
     /**
      * 获取通知公告列表
      */
-    #[Route('POST', 'automsg')]
+    #[Route('GET', 'automsg')]
     // 定时任务里执行
     function autoMsg()
     {
@@ -47,12 +47,13 @@ class AutoImMsg extends \app\BaseController
             // $group 是单条数据的数组
 
             $sendId =  $group["sendId"] . "";
+            $sendName =  $group["sendName"] . "";
             $groupId = $group["groupId"] . "";
             $red_num = $group["redNum"];
             $money = $group["money"];
             $remark = $group["remark"];
             //
-            $this->doSendMsg($sendId, $groupId, $red_num,  $money,  $remark);
+            $this->doSendMsg($sendId,$sendName, $groupId, $red_num,  $money,  $remark);
         }
     }
 
@@ -68,7 +69,7 @@ class AutoImMsg extends \app\BaseController
 
     }
 
-    private function doSendMsg($sendId, $groupId, $red_num, $money, $remark)
+    private function doSendMsg($sendId, $sendName, $groupId, $red_num, $money,  $remark)
     {
         $url = $this->imUrl . '/auth/get_admin_token';
         $resToken = $this->request(["secret" => "openIM123", "userID" => "imAdmin"], $url, null);
@@ -99,9 +100,10 @@ class AutoImMsg extends \app\BaseController
         //         }
         //     }
 
-
+        $newMsgid=$this->generateClientMsgID();
         try {
             $param = [
+                "clientMsgID" =>  $newMsgid,
                 "sendID" => $sendId . "",
                 "recvID" => "", // "1894780926",
                 "groupID" => $groupId . "",
@@ -109,7 +111,7 @@ class AutoImMsg extends \app\BaseController
                 "senderFaceURL" => $this->senderFaceURL,
                 "senderPlatformID" => 1,
                 "content" => [
-                    "data" =>  "{\"number\":\"1\",\"totalMoney\":\"$money\",\"sendID\":\"$sendId\",\"nickname\":\"番茄电商\",\"faceURL\":\"http://cs.tomaoto3.cc/object/1894780926/1755698559723png\",\"type\":\"REDPACKET\"}",
+                    "data" =>  "{ \"clientMsgID\":\" $newMsgid\", \"number\":\"$red_num\",\"totalMoney\":\"$money\",\"sendID\":\"$sendId\",\"nickname\":\"$sendName\",\"faceURL\":\"http://cs.tomaoto3.cc/object/1894780926/1755698559723png\",\"type\":\"REDPACKET\"}",
                     "description" => "SEND",
                     "extension" => "REDPACKET"
                 ],
@@ -125,7 +127,7 @@ class AutoImMsg extends \app\BaseController
                     "iOSPushSound" => "default",
                     "iOSBadgeCount" => true
                 ],
-                  
+
             ];
             $url = $this->imUrl . '/msg/send_msg';
             $resSend = $this->request($param, $url, $token);
@@ -232,4 +234,28 @@ class AutoImMsg extends \app\BaseController
             . substr($chars, 20, 12);
         return $uuid;
     }
+
+
+
+    function generateClientMsgID(): string
+    {
+        // 时间戳（毫秒级）
+        $milliseconds = (int) round(microtime(true) * 1000);
+
+        // 随机字节（例如 8 字节）
+        $randomBytes = random_bytes(8);
+
+        // 可以把时间戳 + 随机字节合起来，再做 md5 或 sha1 哈希
+        $raw = $milliseconds . bin2hex($randomBytes);
+
+        // 哈希生成定长十六进制字符串
+        $clientMsgID = md5($raw);
+
+        // 返回下划线分隔或者直接全部小写十六进制
+        return $clientMsgID;
+    }
+
+    // 使用示例
+
+
 }

@@ -9,7 +9,7 @@ namespace app\model\imext\redpacket;
 class ReceiveModel extends \app\BaseModel
 {
     // 表名
-    protected $name = 'redpacket_receive';
+    protected $name = 'imext_redpacket_receive';
     protected $pk = 'id';
 
     // 字段默认值·

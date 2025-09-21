@@ -34,45 +34,28 @@ class Redpacket extends \app\BaseController
         $this->receiveModel = new ReceiveModel;
     }
 
-    /**
-     * 获取发送红包列表
-     */
-    #[Route('GET', 'list')]
-    public function list()
-    {
-        $where = [];
-        $where['pageNo'] = input('pageNo/d', 1);
-        $where['pageSize'] = input('pageSize/d', 10);
-        $where['videoName'] = input('videoName', '');
-        $where['videoType'] = input('videoType', 0);
-        $where['createBy'] = input('createBy', 0);
-
-        $r = SendModel::search($where);
-
-        $this->success($r);
-    }
+ 
     #[Route('GET', 'list')]
     // 分类标签列表
-    public function index()
+    public function list()
     {
         // $store_id = addslashes(Request::param('storeId'));
 
-
-        $pageNo = addslashes(Request::param('pageNo')); // 页码
-        $pageSize = addslashes(Request::param('pageSize')); // 每页多少条数据
-
-
-        $client_msg_id = addslashes(trim($this->request->param('clientMsgID'))); // 标题
+        $data = $this->request->param();
+        $pageNo = $data["pageNo"];
+        $pageSize = $data["pageSize"];
+ 
+        $client_msg_id = $data["clientMsgID"];
 
 
 
         $total = 0;
         $list = array();
 
-        $total = RedPacketReceiveModel::whereRaw("client_msg_id='" . $client_msg_id . "' And status=0")->count();
+        $total = ReceiveModel::whereRaw("client_msg_id='" . $client_msg_id . "' And status=0")->count();
 
         //$r1 = ProLabelModel::where($condition)->page((int)$pageNo,(int)$pageSize)->order('add_time','desc')->select()->toArray();
-        $r1 = RedPacketReceiveModel::whereRaw("client_msg_id='" . $client_msg_id . "' And status=0")->page((int)$pageNo, (int)$pageSize)->order('id', 'desc')->select()->toArray();
+        $r1 = ReceiveModel::whereRaw("client_msg_id='" . $client_msg_id . "' And status=0")->page((int)$pageNo, (int)$pageSize)->order('id', 'desc')->select()->toArray();
         if ($r1) {
             $list = $r1;
         }
@@ -398,7 +381,7 @@ class Redpacket extends \app\BaseController
 
                     if ($r1 == -1) {
                         // $Jurisdiction->admin_record($store_id, $operator, '修改了二维码管理ID：'.$client_msg_id.' 的信息失败',2,1,0,$operator_id);
-                        $Log_content = __METHOD__ . '->' . __LINE__ . ' 修改失败！参数:' ;
+                        $Log_content = __METHOD__ . '->' . __LINE__ . ' 修改失败！参数:';
                         Logger::Log($Log_content);
                         $message = Lang('label.2');
                         //return output(109,$message);
