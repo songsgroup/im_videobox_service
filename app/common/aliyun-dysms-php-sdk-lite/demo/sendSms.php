@@ -36,8 +36,6 @@ function sendSms_bak($accessKeyId,$accessKeySecret,$SignName,$PhoneNumbers,$Temp
     // *** 需用户填写部分 ***
 
     // fixme 必填: 请参阅 https://ak-console.aliyun.com/ 取得您的AK信息
-//    $accessKeyId = "LTAIcpJI6UQm0idh";
-//    $accessKeySecret = "Lp7jpPRrNbbg4rDzJzyR9DBPMKY0K0";
     $accessKeyId = $accessKeyId;
     $accessKeySecret = $accessKeySecret;
     // fixme 必填: 短信接收号码
