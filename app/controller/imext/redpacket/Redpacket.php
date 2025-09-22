@@ -522,7 +522,7 @@ class Redpacket extends \app\BaseController
      */
     #[Route('GET', '$')]
     // #[PreAuthorize('hasPermi','imext:video:query')]
-    public function batchCheck($id)
+    public function batchCheck()
     {
         $r1 = Db::name('imext_redpacket_send')->where([["status",'=', 0],['create_time','<=',time() - 24*3600]])->select()->toArray();
         Logger::Log('检查过期红包：'. count($r1));
