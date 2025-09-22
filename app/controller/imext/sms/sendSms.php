@@ -1,4 +1,6 @@
 <?php
+
+ 
 /*
  * 此文件用于验证短信服务API接口，供开发时参考
  * 执行验证前请确保文件为utf-8编码，并替换相应参数为您自己的信息，并取消相关调用的注释
@@ -10,15 +12,16 @@
 // namespace Aliyun\DySDKLite\Sms;
 
 // require_once "../SignatureHelper.php";
-require_once('../app/common/aliyun-dysms-php-sdk-lite/SignatureHelper.php');
+require_once( __DIR__ . '/SignatureHelper.php');
 
 // use Aliyun\DySDKLite\SignatureHelper;
 
-use app\common\LaiKeLogUtils;
+ 
 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
+use app\utils\Logger;
 
 /**
  * 签名助手 2017/11/19
@@ -93,13 +96,13 @@ function sendSms_bak($accessKeyId,$accessKeySecret,$SignName,$PhoneNumbers,$Temp
 
 function sendSms($accessKeyId,$accessKeySecret,$SignName,$PhoneNumbers,$TemplateCode,$TemplateParam) {
     
-    LaiKeLogUtils::lktLog('调用sendSms...');
-    LaiKeLogUtils::lktLog('accessKeyId=['.$accessKeyId.']');
-    LaiKeLogUtils::lktLog('accessKeySecret=['.$accessKeySecret.']');
-    LaiKeLogUtils::lktLog('SignName=['.$SignName.']');
-    LaiKeLogUtils::lktLog('PhoneNumbers=['.$PhoneNumbers.']');
-    LaiKeLogUtils::lktLog('TemplateCode=['.$TemplateCode.']');
-    LaiKeLogUtils::lktLog('TemplateParam=['.json_encode($TemplateParam).']');
+    Logger::log('调用sendSms...');
+    Logger::log('accessKeyId=['.$accessKeyId.']');
+    Logger::log('accessKeySecret=['.$accessKeySecret.']');
+    Logger::log('SignName=['.$SignName.']');
+    Logger::log('PhoneNumbers=['.$PhoneNumbers.']');
+    Logger::log('TemplateCode=['.$TemplateCode.']');
+    Logger::log('TemplateParam=['.json_encode($TemplateParam).']');
     
     $countryArea = [];
     $countryArea['86'] = '中国OTP通道2';
@@ -137,14 +140,14 @@ function sendSms($accessKeyId,$accessKeySecret,$SignName,$PhoneNumbers,$Template
     $params['content'] = $TemplateParam['code'];
     $params['platform'] = $countryNo;
     
-    LaiKeLogUtils::lktLog('发送params=['.json_encode($params).']');
+    Logger::log('发送params=['.json_encode($params).']');
     
     $content = sms_request($params, $url);
     
     $result = [];
     
     if($content['result']=='成功'){
-        LaiKeLogUtils::lktLog('['.$PhoneNumbers.']发送成功');
+        Logger::log('['.$PhoneNumbers.']发送成功');
         $result['Code'] = 'OK';
     }else{
         $result['Code'] = 'isv.BUSINESS_LIMIT_CONTROL';
@@ -158,7 +161,7 @@ function sms_request(array $params, $url) {
         'form_params' => $params
     ]);
     $result = $response->getBody()->getContents();
-    // LaiKeLogUtils::lktLog('返回result=['.$result.']');
+    // Logger::log('返回result=['.$result.']');
     return json_decode($result, 1);
 }
 

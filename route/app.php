@@ -45,9 +45,11 @@ Route::group('imext', function () {
         Route::post(':userId', [\app\controller\imext\users\Users::class, 'getInfo']); //->pattern(['userId'=>'\\d+']);
         Route::post('update', [\app\controller\imext\users\Users::class, 'edit']);
         Route::delete(':id', [\app\controller\imext\users\Users::class, 'remove']);
-        Route::post('secret_key', [\app\controller\imext\users\Users::class, 'secret_key']);
+       
     });
-
+    Route::group('sms', function () {       
+        Route::post('secret_key', [\app\controller\imext\sms\Sms::class, 'secret_key']);
+    });
     // Imext Money routes
     Route::group('money', function () {
         Route::group('payincallback', function () {

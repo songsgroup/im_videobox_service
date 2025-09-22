@@ -1,6 +1,6 @@
 <?php
 
-
+ namespace app\controller\imext\sms;
 /**
  * 签名助手 2017/11/19
  *
