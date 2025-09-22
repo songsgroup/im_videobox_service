@@ -62,7 +62,7 @@ class UserBank extends \app\BaseController
     /**
      * 根据用户ID获取银行卡记录
      */
-    #[Route('GET','user/:userId')]
+    #[Route('POST','user/:userId')]
     public function getByUserId($userId)
     {
         $limit = input('limit/d', 20);
@@ -73,7 +73,7 @@ class UserBank extends \app\BaseController
     /**
      * 根据提现单号获取记录
      */
-    #[Route('GET','order/:orderId')]
+    #[Route('POST','order/:orderId')]
     public function getByOrderId($orderId)
     {
         $data = UserBankModel::getByOrderId($orderId);
@@ -86,7 +86,7 @@ class UserBank extends \app\BaseController
     /**
      * 根据银行卡ID获取记录
      */
-    #[Route('GET','card/:cardId')]
+    #[Route('POST','card/:cardId')]
     public function getByCardId($cardId)
     {
         $data = UserBankModel::getByCardId($cardId);
