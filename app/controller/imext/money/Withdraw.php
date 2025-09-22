@@ -67,22 +67,40 @@ class Withdraw extends \app\BaseController
 
         $data["order_id"] = $this->getOrderNo();
 
+        $money = $data["money"];
         //按照规则，加判断
 
         //提现需要设置个人拉新5人每天可以提100元内。45人每天可以提现500元，99人每天可以提现1000元。团队人数1000人以上随便提现。)
         //
 
-
-        $r = Db::name('imext_user')->where("user_id", $data["userID"])->select()->toArray();
-
-        if ($r) {
+        $r1Count = Db::name('imext_withdraw')->where("user_id", $data["userID"])->where("status", 0)->select()->count();
+        if ($r1Count > 0) {
+            $this->error('你的提现还在审批中，请稍后再试！');
         }
+
+        $r1Count = Db::name('imext_user')->where("referrer_id", $data["userID"])->select()->count();
+
+        if ($r1Count < 5) {
+            $this->error('需要团队人员5人才能提现！');
+        } else if ($r1Count >= 5 && $r1Count < 45) {
+            if ($money > 500) {
+                $this->error('需要团队人员45人才能提现500！');
+            }
+        } else if ($r1Count >= 45 && $r1Count < 99) {
+            if ($money > 1000) {
+                $this->error('需要团队人员99人才能提现1000！');
+            }
+        } else if ($r1Count >= 99 && $r1Count < 1000) {
+            if ($money > 10000) {
+                $this->error('需要团队人员999人才能提现10000！');
+            }
+        }  
+
 
         $data["userId"] = $data["userID"];
 
         $r = $this->model->create($data);
-
-
+ 
         //
         $result = ['errCode' => 200, 'errMsg' => '', 'code' => 200, 'data' => $r, 'msg' => '成功'];
         //
