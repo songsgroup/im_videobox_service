@@ -36,9 +36,9 @@ class Withdraw extends \app\BaseController
         $where['pageSize'] = input('pageSize/d', 10);
         $where['userId'] = input('userID', '');
 
-        if ($where['userId'] == "") {
-            $this->error("请输入用户");
-        }
+        // if ($where['userId'] == "") {
+        //     $this->error("请输入用户");
+        // }
 
 
         $r = WithdrawModel::search($where);

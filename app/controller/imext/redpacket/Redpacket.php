@@ -159,7 +159,7 @@ class Redpacket extends \app\BaseController
                         'money' => $money,
                         'money_front' => $old_money,
                         'type' => "支出",
-                        'data_id' => $client_msg_id,                      
+                        'data_id' => $client_msg_id,
                         'status' => 0,
                         'create_time' => date('Y-m-d H:i:s'),
                         'remark' => "发送红包"
@@ -282,8 +282,17 @@ class Redpacket extends \app\BaseController
                 $left_money = $r1[0]["total_money"] - $r1[0]["receive_money"];
                 $money = $this->randomPart($left_money, $left_num);
             }
+            //检查当前红包是否被领取过。领取过的不能再领取
+            $r1 = Db::name('imext_redpacket_receive')->where("client_msg_id", $client_msg_id)->where("rcv_id", $rcv_id)->count();
+            if ($r1 >= 1) {
+                return json([
+                    'code' => 200,
+                    'errCode' => 109,
+                    'errMsg' => "你已经收取过！",
+                    'msg' => "你已经收取过！"
+                ]);
+            }
             //
-
             Db::startTrans();
             try {
                 $sql3 = array('client_msg_id' => $client_msg_id, 'rcv_id' => $rcv_id, 'nick_name' => $nick_name, 'face_url' => $face_url, 'money' => $money, 'status' => 0, 'create_at' => $time);
@@ -308,7 +317,7 @@ class Redpacket extends \app\BaseController
                     'money' => $money,
                     'money_front' => $rInUser["money"],
                     'type' => "收入",
-                    'data_id' => $client_msg_id,                    
+                    'data_id' => $client_msg_id,
                     'status' => 0,
                     'create_time' => date('Y-m-d H:i:s'),
                     'remark' => "收到红包"
@@ -420,7 +429,7 @@ class Redpacket extends \app\BaseController
 
                     $sql1 = array('client_msg_id' => $client_msg_id, 'rcv_id' => $rcv_id, 'money' => $money, 'status' => -1, 'create_at' => $time, 'remark' => $remark);
                     $r1 = Db::name('imext_redpacket_receive')->insertGetId($sql1);
-                     //增加接受者钱
+                    //增加接受者钱
                     $rInUser = Db::name('imext_user')->where(["user_id" => $out_user_id])->find();
 
                     //如果是单个红包拒收后增加发送者钱
@@ -436,7 +445,7 @@ class Redpacket extends \app\BaseController
                         'money' => $money,
                         'money_front' => $rInUser["money"],
                         'type' => "收入",
-                        'data_id' => $client_msg_id,                      
+                        'data_id' => $client_msg_id,
                         'status' => 0,
                         'create_time' => date('Y-m-d H:i:s'),
                         'remark' => "退回红包"

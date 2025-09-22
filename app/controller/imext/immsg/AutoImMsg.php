@@ -53,7 +53,7 @@ class AutoImMsg extends \app\BaseController
             $money = $group["money"];
             $remark = $group["remark"];
             //
-            $this->doSendMsg($sendId,$sendName, $groupId, $red_num,  $money,  $remark);
+            $this->doSendMsg($sendId, $sendName, $groupId, $red_num,  $money,  $remark);
         }
     }
 
@@ -100,7 +100,8 @@ class AutoImMsg extends \app\BaseController
         //         }
         //     }
 
-        $newMsgid=$this->generateClientMsgID();
+        $newMsgid = $this->generateClientMsgID();
+        $newconversationID= $this->generateClientMsgID();
         try {
             $param = [
                 "clientMsgID" =>  $newMsgid,
@@ -111,7 +112,7 @@ class AutoImMsg extends \app\BaseController
                 "senderFaceURL" => $this->senderFaceURL,
                 "senderPlatformID" => 1,
                 "content" => [
-                    "data" =>  "{ \"clientMsgID\":\" $newMsgid\", \"number\":\"$red_num\",\"totalMoney\":\"$money\",\"sendID\":\"$sendId\",\"nickname\":\"$sendName\",\"faceURL\":\"http://cs.tomaoto3.cc/object/1894780926/1755698559723png\",\"type\":\"REDPACKET\"}",
+                    "data" =>  "{ \"createRedPacketClientMsgID\":\" $newMsgid\", \"groupID\":\"$groupId\",\"conversationID\":\"$$groupId\",\"number\":\"$red_num\",\"totalMoney\":\"$money\",\"sendID\":\"$sendId\",\"nickname\":\"$sendName\",\"faceURL\":\"http://cs.tomaoto3.cc/object/1894780926/1755698559723png\",\"type\":\"REDPACKET\"}",
                     "description" => "SEND",
                     "extension" => "REDPACKET"
                 ],
@@ -126,7 +127,7 @@ class AutoImMsg extends \app\BaseController
                     "ex" => "",
                     "iOSPushSound" => "default",
                     "iOSBadgeCount" => true
-                ],
+                ],              
 
             ];
             $url = $this->imUrl . '/msg/send_msg';
@@ -155,7 +156,7 @@ class AutoImMsg extends \app\BaseController
                     'money' => $money,
                     'money_front' => $userMoney,
                     'type' => "支出",
-                    'data_id' => $clientMsgId,                   
+                    'data_id' => $clientMsgId,
                     'status' => 0,
                     'create_time' => date('Y-m-d H:i:s'),
                     'remark' => "播放扣款"
