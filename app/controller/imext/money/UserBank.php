@@ -105,26 +105,26 @@ class UserBank extends \app\BaseController
         if (empty($data['user_id'])) {
             $this->error('用户ID不能为空');
         }
-        if (empty($data['name'])) {
-            $this->error('用户姓名不能为空');
-        }
-        if (empty($data['money'])) {
-            $this->error('提现金额不能为空');
-        }
+        // if (empty($data['name'])) {
+        //     $this->error('用户姓名不能为空');
+        // }
+        // if (empty($data['money'])) {
+        //     $this->error('提现金额不能为空');
+        // }
         
-        // 生成提现单号
-        do {
-            $orderId = UserBankModel::generateOrderId();
-        } while (UserBankModel::checkOrderIdExists($orderId));
+        // // 生成提现单号
+        // do {
+        //     $orderId = UserBankModel::generateOrderId();
+        // } while (UserBankModel::checkOrderIdExists($orderId));
         
-        $data['order_id'] = $orderId;
+        // $data['order_id'] = $orderId;
         
         $r = UserBankModel::createRecord($data);
         if (!$r) {
             $this->error('保存失败');
         }
 
-        $this->success(['id' => $r->id, 'order_id' => $orderId]);
+        $this->success(['id' => $r->id, 'bank_card_number' => $r->bank_card_number]);
     }
 
     /**
