@@ -109,7 +109,7 @@ class Redpacket extends \app\BaseController
 
 
 
-        $data["create_time"] = date("Y-m-d H:i:s");
+        $time= date("Y-m-d H:i:s");
 
         if ($money == '') {
             $Log_content = __METHOD__ . '->' . __LINE__ . ' 红包额度不能为空！';

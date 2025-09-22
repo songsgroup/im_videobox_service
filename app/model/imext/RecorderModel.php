@@ -26,7 +26,7 @@ class RecorderModel extends \app\BaseModel
         $m = self::order('id','desc');
         
         // 用户ID筛选
-        $userId && $m = $m->where('user_id','like','%'.$userId.'%');
+        $userId && $m = $m->where('user_id','=',$userId);
         
         // 用户名筛选
         $nickName && $m = $m->where('nick_name','like','%'.$nickName.'%');
