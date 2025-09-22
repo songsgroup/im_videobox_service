@@ -19,7 +19,7 @@ class ImExtUserModel extends \app\BaseModel
     {
         extract($where);
 
-        $m = self::order('id','asc');
+        $m = self::order('id','desc');
         $imId && $m = $m->where('user_id','like','%'.$imId.'%');
         
         if ($pageNo??0 && $pageSize??0) {
