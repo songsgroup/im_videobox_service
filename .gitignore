@@ -16,3 +16,4 @@ composer.lock
 !/addons/alisms
 !/addons/qcloudsms
 !/addons/kdniao
+/runtime

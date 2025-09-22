@@ -1,10 +1,11 @@
 <?php
-namespace app\common\api;
+namespace app\common\pay;
 
-use app\common\LaiKeLogUtils;
+ 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
+use app\utils\Logger;
 //G-01888番茄境外资金盘 通道B
 //资金提现通道
 
@@ -13,7 +14,7 @@ class PayOut30
     private static $id = '9089';
     private static $key = 'MTunSzK0uMidacrSew7OgRyUOUOlIHmwhhrsdaKRufEDCGMTwZJp1ds4S9Etdazg';
     private static $clientIp ='8.210.221.104';
-    private static $notifyUrl ="https://api.mytomato.vip/index.php/payoutcallback";
+    private static $notifyUrl ="https://test.wfjoma.com/imext/money/payoutcallback/apply";
     
     //订单号，银行名称，支行名称，用户名称，卡号。金额。卡类型
     public static function recharge($outTradeNo,$bankname,$subbranch,$accountname,$cardnumber,$amount)
@@ -23,7 +24,7 @@ class PayOut30
         $cardtype=0;
         $channel="";
         
-        LaiKeLogUtils::lktLog('开始发送，PayOut30 ' . $outTradeNo);
+        Logger::log('开始发送，PayOut30 ' . $outTradeNo);
         
         
         //mchid=&out_trade_no=&money=&notifyurl=&bankname=&subbranch=&accountname=&cardnumber=
@@ -41,7 +42,7 @@ class PayOut30
             'notifyurl'  => self::$notifyUrl.'/'.$outTradeNo, //地址里带入订单编号
         ];
         
-        //LaiKeLogUtils::lktLog('发送数据='. json_encode($params));
+        //Logger::log('发送数据='. json_encode($params));
         self::Log('开始发送，PayOut30= ' . json_encode($params));
          
         $sign = self::sign($params);
@@ -49,12 +50,12 @@ class PayOut30
         $params["sign"] = $sign;
         
         self::Log('最终发送数据='.json_encode($params));
-        // LaiKeLogUtils::lktLog('发送数据2='.json_encode($params));
+        // Logger::log('发送数据2='.json_encode($params));
         
         $url = 'https://shapi.shilianpay666.top/v1/dfapi/add';
         $result = self::request($params,$url);
         
-        LaiKeLogUtils::lktLog('开始发送，PayOut30 返回：' . json_encode($result) );
+        Logger::log('开始发送，PayOut30 返回：' . json_encode($result) );
         self::Log('PayOut30 返回：' .  json_encode($result));
         if (isset($result['status']) && $result['status'] == 'success') {
             return $result;
@@ -131,8 +132,7 @@ class PayOut30
       // 日志
     public static function Log($Log_content)
     {
-        $lktlog = new LaiKeLogUtils();
-        $lktlog->log("admin/MyRechargeOut.log",$Log_content);
+        //
         return;
     }
 }

@@ -122,10 +122,10 @@ class Recharge extends \app\BaseController
                 //$result = ['errCode' => 200,'errMsg' => $payresult, 'code' => -99, 'data' => false, 'msg' =>  $payresult];
                 return json($result);
             } else {
-                $result = ['errCode' => -99,'errMsg' => $payresult, 'code' => -99, 'data' => false, 'msg' =>  $payresult];
+                $result = ['errCode' => -99,'errMsg' => "网络繁忙，请选择其他通道！" , 'code' => -99, 'data' => false, 'msg' =>  "网络繁忙，请选择其他通道！"];
 
                 Logger::log('充值' . $orderNo);
-                Logger::log(var_export($result, 1));
+                Logger::log(var_export( $payresult, 1));
             }
         } catch (\Exception $e) {
             Logger::log('充值 ' . $e->getMessage());

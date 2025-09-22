@@ -148,7 +148,8 @@ class Withdraw extends \app\BaseController
             $withdraw =  WithdrawModel::Where("id", $id)->find();
 
             $bankId = $withdraw["cardId"];
-            $orderId = $withdraw["orderNo"];
+            $orderId = $withdraw["orderId"];
+            $amount = $withdraw["money"]; //人民币
             //调用下发通道，进行提现操作
             //只进行银行卡提现操作，其他的不处理
             //订单号，银行名称，支行名称，用户名称，卡号。金额。卡类型
@@ -159,14 +160,14 @@ class Withdraw extends \app\BaseController
             $subbranch = $bankres[0]["branch"];
             $accountname = $bankres[0]["cardHolder"];
             $cardnumber = $bankres[0]["bankCardNumber"]; //卡号
-            $amount = $withdraw[0]['money']; //人民币
+          
             //recharge($orderId,$bankname,$subbranch,$accountname,$cardnumber,$amount)
 
             $time = date('Y-m-d h:i:s');
 
             Logger::Log('开始请求' . __METHOD__ . '->' . __LINE__ . $orderId);
             try {
-                $payout_class = "\\app\\common\\api\\PayOut30";
+                $payout_class = "\\app\\common\\pay\\PayOut30";
                 $payout_class = new $payout_class;
 
                 //
@@ -199,9 +200,9 @@ class Withdraw extends \app\BaseController
                     Logger::Log('代收失败' . __METHOD__ . '->' . __LINE__ . $orderId);
                  }
             } catch (\Exception $e) {
-                Logger::Log('代收失败' . $e->getMessage());
-                Logger::Log($e->getMessage());
-                Logger::Log('代收失败 ' . __METHOD__ . '->' . __LINE__ . $e->getMessage());
+                $msg=$e->getMessage();              
+             
+                Logger::Log('代收失败 ' . __METHOD__ . '->' . __LINE__ . $msg);
             }
 
 
