@@ -159,8 +159,7 @@ class Redpacket extends \app\BaseController
                         'money' => $money,
                         'money_front' => $old_money,
                         'type' => "支出",
-                        'data_id' => $client_msg_id,
-                        'type' => "",
+                        'data_id' => $client_msg_id,                      
                         'status' => 0,
                         'create_time' => date('Y-m-d H:i:s'),
                         'remark' => "发送红包"
@@ -309,8 +308,7 @@ class Redpacket extends \app\BaseController
                     'money' => $money,
                     'money_front' => $rInUser["money"],
                     'type' => "收入",
-                    'data_id' => $client_msg_id,
-                    'type' => "",
+                    'data_id' => $client_msg_id,                    
                     'status' => 0,
                     'create_time' => date('Y-m-d H:i:s'),
                     'remark' => "收到红包"
@@ -438,8 +436,7 @@ class Redpacket extends \app\BaseController
                         'money' => $money,
                         'money_front' => $rInUser["money"],
                         'type' => "收入",
-                        'data_id' => $client_msg_id,
-                        'type' => "",
+                        'data_id' => $client_msg_id,                      
                         'status' => 0,
                         'create_time' => date('Y-m-d H:i:s'),
                         'remark' => "退回红包"

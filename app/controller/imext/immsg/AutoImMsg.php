@@ -155,13 +155,12 @@ class AutoImMsg extends \app\BaseController
                     'money' => $money,
                     'money_front' => $userMoney,
                     'type' => "支出",
-                    'data_id' => $clientMsgId,
-                    'type' => "",
+                    'data_id' => $clientMsgId,                   
                     'status' => 0,
                     'create_time' => date('Y-m-d H:i:s'),
                     'remark' => "播放扣款"
                 );
-                $r1 = Db::name('imext_rd')->insertGetId($Rorders);
+                $r1 = Db::name('imext_money_record')->insertGetId($Rorders);
 
                 Db::commit();
 

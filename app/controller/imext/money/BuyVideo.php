@@ -76,8 +76,7 @@ class BuyVideo extends \app\BaseController
                             'money' => $inputMoney,
                             'money_front' => $userMoney,
                             'type' => "支出",
-                            'data_id' => $clientMsgID,
-                            'type' => "",
+                            'data_id' => $clientMsgID,                          
                             'status' => 0,
                             'create_time' => date('Y-m-d H:i:s'),
                             'remark' => "播放扣款"
@@ -94,11 +93,10 @@ class BuyVideo extends \app\BaseController
                             'money' => $inputMoney,
                             'money_front' => $userMoney,
                             'type' => "收入",
-                            'data_id' => $clientMsgID,
-                            'type' => "",
+                            'data_id' => $clientMsgID,                           
                             'status' => 0,
                             'create_time' => date('Y-m-d H:i:s'),
-                            'remark' => "播放扣款"
+                            'remark' => "播放收入"
                         );
                         $r1 = Db::name('imext_money_record')->insertGetId($Rorders);
 
