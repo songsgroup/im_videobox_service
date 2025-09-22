@@ -146,7 +146,7 @@ class Redpacket extends \app\BaseController
                     //记录发送历史
                     $remark = "IM发送红包";
 
-                    $sql1 = array('client_msg_id' => $client_msg_id, 'send_id' => $send_id, 'shop_id' => $out_user_id, 'nick_name' => $nick_name, 'face_url' => $face_url, 'red_num' => $red_num, 'total_money' => $money, 'type' => "", 'status' => 0, 'create_time' => $time, 'remark' => $remark, "receive_money" => 0, 'receive_num' => 0);
+                    $sql1 = array('client_msg_id' => $client_msg_id, 'send_id' => $send_id, 'nick_name' => $nick_name, 'face_url' => $face_url, 'red_num' => $red_num, 'total_money' => $money, 'type' => "", 'status' => 0, 'create_time' => $time, 'remark' => $remark, "receive_money" => 0, 'receive_num' => 0);
 
                     $r1 = Db::name('imext_redpacket_send')->insertGetId($sql1);
 
