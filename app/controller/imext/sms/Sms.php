@@ -33,6 +33,7 @@ class Sms extends \app\BaseController
         $res = $this->generate_code($mobile, $message_type, $message_type1);
     }
 
+    
 
     // 发送验证码
     public function generate_code($mobile, $type, $type1, $bizparams = array())

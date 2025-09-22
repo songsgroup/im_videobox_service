@@ -1,8 +1,8 @@
 <?php
 
-namespace app\admin\imext;
+namespace app\model\imext;
 
-use think\Model;
+ 
 
 class SessionIdModel extends \app\BaseModel
 { 
