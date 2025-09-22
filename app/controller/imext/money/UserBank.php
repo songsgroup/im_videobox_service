@@ -71,7 +71,7 @@ class UserBank extends \app\BaseController
         if (count($data) > 0) {
             foreach ($data as $k => $v) {
                 $bankInfo = \app\model\imext\BankModel::search(['name' => $v['bankName']]);
-                if ($bankInfo['rows']->count() > 0) {
+                if ($bankInfo['rows'] && count($bankInfo['rows']) > 0) {
                     // $data[$k]['bank_name'] = $bankInfo['name'];
                     $data[$k]['bankEnName'] = $bankInfo['rows'][0]['enName'];
                     $data[$k]['bankLogo'] = $bankInfo['rows'][0]['logo'];
