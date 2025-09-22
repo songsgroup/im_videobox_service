@@ -66,17 +66,17 @@ class Users extends \app\BaseController
             ->find();
 
         if ($user) {
-            $referrer_id = $user["user_id"];
+            $parent_id = $user["user_id"];
         } else {
-            $referrer_id = "";
+            $parent_id = "";
         }
 
         $editdata = [
             'user_id' =>  $data["userID"],
             'user_name' =>  $data["userName"],
-            'referrer_id' => $referrer_id,
+            'referrer_id' => $parent_id,
             'create_time' =>  date('Y-m-d H:i:s'),
-            'invitation code' => $c_code,
+            'invitation_code' => $c_code,
         ];
 
         $r = $this->model->create($editdata);
