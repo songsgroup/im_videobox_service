@@ -27,7 +27,7 @@ class BankModel extends \app\BaseModel
     {
         extract($where);
 
-        $m = self::order('id','desc');
+        $m = self::order('sort','asc','id','desc');
         
         // 用户ID筛选
         // $userId && $m = $m->where('user_id','like','%'.$userId.'%');
@@ -73,7 +73,7 @@ class BankModel extends \app\BaseModel
     public static function getByUserId($userId, $limit = 20)
     {
         return self::where('user_id', $userId)
-                   ->order('id','desc')
+                   ->order([['sort','asc'],['id','desc']])
                    ->limit($limit)
                    ->select()
                    ->toArray();

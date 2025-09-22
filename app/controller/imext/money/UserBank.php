@@ -67,6 +67,23 @@ class UserBank extends \app\BaseController
     {
         $limit = input('limit/d', 20);
         $data = UserBankModel::getByUserId($userId, $limit);
+        //如果返回记录数大于0，则遍历添加银行信息
+        if (count($data) > 0) {
+            foreach ($data as $k => $v) {
+                $bankInfo = \app\model\imext\BankModel::search(['name' => $v['bankName']]);
+                if ($bankInfo['rows']->count() > 0) {
+                    // $data[$k]['bank_name'] = $bankInfo['name'];
+                    $data[$k]['bankEnName'] = $bankInfo['rows'][0]['enName'];
+                    $data[$k]['bankLogo'] = $bankInfo['rows'][0]['logo'];
+                    $data[$k]['cardImg'] = $bankInfo['rows'][0]['cardImg'];
+                } else {
+                    // $data[$k]['bank_name'] = '';
+                    $data[$k]['bankEnName'] = '';
+                    $data[$k]['bankLogo'] = '';
+                    $data[$k]['cardImg'] = '';
+                }
+            }
+        }
         $this->success(['data' => $data]);
     }
 
