@@ -94,13 +94,13 @@ class Withdraw extends \app\BaseController
             if ($money > 10000) {
                 $this->error('需要团队人员999人才能提现10000！');
             }
-        }  
+        }
 
 
         $data["userId"] = $data["userID"];
 
         $r = $this->model->create($data);
- 
+
         //
         $result = ['errCode' => 200, 'errMsg' => '', 'code' => 200, 'data' => $r, 'msg' => '成功'];
         //
