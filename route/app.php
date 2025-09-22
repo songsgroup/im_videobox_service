@@ -131,9 +131,9 @@ Route::group('imext', function () {
             Route::post('list', [\app\controller\imext\money\UserBank::class, 'list']);
             Route::get('statistics', [\app\controller\imext\money\UserBank::class, 'statistics']);
             Route::get('pendingCount', [\app\controller\imext\money\UserBank::class, 'pendingCount']);
-            Route::get('user/:userId', [\app\controller\imext\money\UserBank::class, 'getByUserId']);
-            Route::get('order/:orderId', [\app\controller\imext\money\UserBank::class, 'getByOrderId']);
-            Route::get('card/:cardId', [\app\controller\imext\money\UserBank::class, 'getByCardId']);
+            Route::POST('user/:userId', [\app\controller\imext\money\UserBank::class, 'getByUserId']);
+            Route::POST('order/:orderId', [\app\controller\imext\money\UserBank::class, 'getByOrderId']);
+            Route::POST('card/:cardId', [\app\controller\imext\money\UserBank::class, 'getByCardId']);
             Route::post(':id', [\app\controller\imext\money\UserBank::class, 'getInfo'])->pattern(['id' => '\\d+']);
             Route::post('add', [\app\controller\imext\money\UserBank::class, 'add']);
             Route::post('update', [\app\controller\imext\money\UserBank::class, 'edit']);

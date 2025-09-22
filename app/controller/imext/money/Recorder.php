@@ -21,7 +21,7 @@ class Recorder extends \app\BaseController
     /**
      * 获取资金流向记录列表
      */
-    #[Route('GET','list')]
+    #[Route('POST','list')]
     public function list()
     {
 

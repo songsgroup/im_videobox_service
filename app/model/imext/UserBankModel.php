@@ -153,7 +153,7 @@ class UserBankModel extends \app\BaseModel
             'branch' => $data['branch'] ?? '',
             'bank_card_number' => $data['bank_card_number'] ?? '',
             'mobile' => $data['mobile'] ?? '',
-            'add_date' => time(),
+            'add_date' => date('Y-m-d H:i:s'),
             'is_default' => $data['is_default'] ?? 0,
             // 'refuse' => $data['refuse'] ?? '',
             // 'type' => $data['type'] ?? 1,
