@@ -4,7 +4,7 @@ declare (strict_types = 1);
 namespace app\model\imext;
 
 /**
- * WithdrawModel
+ * 提现
  */
 class WithdrawModel extends \app\BaseModel
 {

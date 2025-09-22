@@ -34,7 +34,7 @@ class Redpacket extends \app\BaseController
         $this->receiveModel = new ReceiveModel;
     }
 
- 
+
     #[Route('GET', 'list')]
     // 分类标签列表
     public function list()
@@ -44,7 +44,7 @@ class Redpacket extends \app\BaseController
         $data = $this->request->param();
         $pageNo = $data["pageNo"];
         $pageSize = $data["pageSize"];
- 
+
         $client_msg_id = $data["clientMsgID"];
 
 
@@ -524,8 +524,8 @@ class Redpacket extends \app\BaseController
     // #[PreAuthorize('hasPermi','imext:video:query')]
     public function batchCheck()
     {
-        $r1 = Db::name('imext_redpacket_send')->where([["status",'=', 0],['create_time','<=',time() - 24*3600]])->select()->toArray();
-        Logger::Log('检查过期红包：'. count($r1));
+        $r1 = Db::name('imext_redpacket_send')->where([["status", '=', 0], ['create_time', '<=', time() - 24 * 3600]])->select()->toArray();
+        Logger::Log('检查过期红包：' . count($r1));
         //如果红包创建超过24小时，自动退回未接收的金额
         if ($r1) {
             foreach ($r1 as $key => $value) {
@@ -548,7 +548,7 @@ class Redpacket extends \app\BaseController
                     }
 
                     Db::commit();
-                    Logger::Log('红包ID：'.$value["client_msg_id"].' 过期，退回金额：'.$left_money .'发送者：'.$out_user_id);
+                    Logger::Log('红包ID：' . $value["client_msg_id"] . ' 过期，退回金额：' . $left_money . '发送者：' . $out_user_id);
                 } catch (\Exception $e) {
                     // 回滚事务
                     Db::rollback();
@@ -558,5 +558,10 @@ class Redpacket extends \app\BaseController
             }
         }
         $this->success(['count' => count($r1)]);
+    }
+
+    function randomPart($total, $parts)
+    {
+        return ($parts > 0 && $total >= $parts) ? rand(1, $total - $parts + 1) : 0;
     }
 }
