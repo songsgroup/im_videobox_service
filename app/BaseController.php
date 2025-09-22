@@ -192,7 +192,9 @@ abstract class BaseController
     {
         $result = [];
         $result['code'] = $code;
+        $result['errCode'] = $code;
         $result['msg'] = $msg;
+        $result['errMsg'] = $msg;
         $data && is_array($data) && $result=array_merge($result,$data);
         $data && is_string($data) && $result['data']=$data;
         $this->app->isDebug() && $result['uri'] = $this->request->controller().'->'.$this->request->action().'()';
