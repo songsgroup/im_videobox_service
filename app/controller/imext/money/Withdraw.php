@@ -64,7 +64,7 @@ class Withdraw extends \app\BaseController
         // 设置默认值
         $data['create_time'] = date('Y-m-d H:i:s');
         $data['create_user'] = $data['create_user'] ?? 'system';
-
+        
         $data["order_id"] =$this->getOrderNo();
 
         $r = $this->model->create($data);
