@@ -61,12 +61,12 @@ class Users extends \app\BaseController
         } while ($exists);
 
         $user = Db::name('imext_user')
-            ->field('id, username, c_code')
+            ->field('id, user_id,user_name, invitation_code')
             ->where('invitation_code',  $data["referrerId"])
             ->find();
 
         if ($user) {
-            $referrer_id = $user["userId"];
+            $referrer_id = $user["user_id"];
         } else {
             $referrer_id = "";
         }
@@ -115,7 +115,7 @@ class Users extends \app\BaseController
         $this->success();
     }
 
-    function generateInviteCode($length = 4)
+    private function generateInviteCode($length = 4)
     {
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $code = '';

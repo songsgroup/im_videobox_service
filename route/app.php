@@ -40,9 +40,9 @@ Route::group('imext', function () {
 
     // Imext Users routes
     Route::group('users', function () {
+        Route::post('add', [\app\controller\imext\users\Users::class, 'add']);
         Route::post('list', [\app\controller\imext\users\Users::class, 'list']);
         Route::post(':userId', [\app\controller\imext\users\Users::class, 'getInfo']); //->pattern(['userId'=>'\\d+']);
-        Route::post('add', [\app\controller\imext\users\Users::class, 'add']);
         Route::post('update', [\app\controller\imext\users\Users::class, 'edit']);
         Route::delete(':id', [\app\controller\imext\users\Users::class, 'remove']);
     });
