@@ -266,7 +266,7 @@ class Redpacket extends \app\BaseController
                 // $left=
                 $left_num = $r1[0]["red_num"] - $r1[0]["receive_num"];
                 $left_money = $r1[0]["total_money"] - $r1[0]["receive_money"];
-                $money = randomPart($left_money, $left_num);
+                $money = $this->randomPart($left_money, $left_num);
             }
             //
 
