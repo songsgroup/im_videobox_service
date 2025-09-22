@@ -147,6 +147,12 @@ Route::group('imext', function () {
             Route::delete(':id', [\app\controller\imext\money\UserBank::class, 'remove']);
         });
 
+        //Bank routes
+        Route::group('bank', function () {
+            Route::post('list', [\app\controller\imext\money\Bank::class, 'list']);
+            Route::post('add', [\app\controller\imext\money\Bank::class, 'add']);
+        });
+
         // Digital Currency routes
         Route::group('digitalcurrency', function () {
             Route::post('list', [\app\controller\imext\money\DigitalCurrency::class, 'list']);

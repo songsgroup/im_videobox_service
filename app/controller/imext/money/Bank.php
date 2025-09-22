@@ -3,23 +3,23 @@ namespace app\controller\imext\money;
 
 use think\annotation\route\Group;
 use think\annotation\route\Route;
-use app\model\imext\UserBankModel;
+use app\model\imext\BankModel;
 
 /**
  * 银行卡管理
  */
-#[Group('imext/money/userbank')]
-class UserBank extends \app\BaseController
+#[Group('imext/money/bank')]
+class Bank extends \app\BaseController
 {
     protected $noNeedLogin = ['*'];
 
     protected function initialize(){
         parent::initialize();
-        $this->model = new UserBankModel;
+        $this->model = new BankModel;
     }
 
     /**
-     * 获取银行卡记录列表
+     * 获取银行列表
      */
     #[Route('POST','list')]
     public function list()
@@ -27,21 +27,21 @@ class UserBank extends \app\BaseController
         $where = [];
         $where['pageNo'] = input('pageNo/d',1);
         $where['pageSize'] = input('pageSize/d',10);
-        $where['userId'] = input('userID','');
+        // $where['userId'] = input('userID','');
         $where['name'] = input('name','');
-        $where['cardId'] = input('cardId','');
-        $where['type'] = input('type','');
-        $where['status'] = input('status','');
-        $where['orderId'] = input('orderId','');
-        $where['createUser'] = input('createUser','');
-        $where['minMoney'] = input('minMoney','');
-        $where['maxMoney'] = input('maxMoney','');
-        $where['params'] = [
-            'beginTime' => input('beginTime',''),
-            'endTime' => input('endTime','')
-        ];
+        $where['en_name'] = input('en_name','');
+        // $where['type'] = input('type','');
+        // $where['status'] = input('status','');
+        // $where['orderId'] = input('orderId','');
+        // $where['createUser'] = input('createUser','');
+        // $where['minMoney'] = input('minMoney','');
+        // $where['maxMoney'] = input('maxMoney','');
+        // $where['params'] = [
+        //     'beginTime' => input('beginTime',''),
+        //     'endTime' => input('endTime','')
+        // ];
 
-        $r = UserBankModel::search($where);
+        $r = BankModel::search($where);
         
         $result = ['errCode' => 200,'errMsg' => '成功', 'code' => 200, 'data' => $r, 'msg' => '成功'];
         return json($result);
@@ -67,23 +67,6 @@ class UserBank extends \app\BaseController
     {
         $limit = input('limit/d', 20);
         $data = UserBankModel::getByUserId($userId, $limit);
-        //如果返回记录数大于0，则遍历添加银行信息
-        if (count($data) > 0) {
-            foreach ($data as $k => $v) {
-                $bankInfo = \app\model\imext\BankModel::search(['name' => $v['bankName']]);
-                if ($bankInfo['rows'] && count($bankInfo['rows']) > 0) {
-                    // $data[$k]['bank_name'] = $bankInfo['name'];
-                    $data[$k]['bankEnName'] = $bankInfo['rows'][0]['enName'];
-                    $data[$k]['bankLogo'] = $bankInfo['rows'][0]['logo'];
-                    $data[$k]['cardImg'] = $bankInfo['rows'][0]['cardImg'];
-                } else {
-                    // $data[$k]['bank_name'] = '';
-                    $data[$k]['bankEnName'] = '';
-                    $data[$k]['bankLogo'] = '';
-                    $data[$k]['cardImg'] = '';
-                }
-            }
-        }
         $this->success(['data' => $data]);
     }
 
@@ -111,7 +94,7 @@ class UserBank extends \app\BaseController
     }
 
     /**
-     * 新增银行卡记录
+     * 新增银行
      */
     #[Route('POST','add')]
     public function add()
@@ -119,9 +102,9 @@ class UserBank extends \app\BaseController
         $data = $this->request->param();
         
         // 验证必填字段
-        if (empty($data['user_id'])) {
-            $this->error('用户ID不能为空');
-        }
+        // if (empty($data['user_id'])) {
+        //     $this->error('用户ID不能为空');
+        // }
         // if (empty($data['name'])) {
         //     $this->error('用户姓名不能为空');
         // }
@@ -136,12 +119,12 @@ class UserBank extends \app\BaseController
         
         // $data['order_id'] = $orderId;
         
-        $r = UserBankModel::createRecord($data);
+        $r = BankModel::createBank($data);
         if (!$r) {
             $this->error('保存失败');
         }
 
-        $this->success(['id' => $r->id, 'bank_card_number' => $r->bank_card_number]);
+        $this->success(['id' => $r->id, 'bank_name' => $r->name]);
     }
 
     /**
