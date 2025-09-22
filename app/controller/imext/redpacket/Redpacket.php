@@ -242,6 +242,17 @@ class Redpacket extends \app\BaseController
 
 
         $r1 = Db::name('imext_redpacket_send')->where("client_msg_id", $client_msg_id)->whereExp('red_num', '> receive_num')->select()->toArray();
+        //如果红包创建超过24小时，红包过期
+        if (time() - strtotime($r1[0]["create_time"]) > 24 * 3600) {
+            return json([
+                'code' => 200,
+                'errCode' => 109,
+                'errMsg' => "红包已过期",
+                'money' => 0,
+                'receiveMoney' => 0,
+                'msg' => "失败"
+            ]);
+        }
         if ($r1) {
 
             $total_money = $r1[0]["total_money"];
@@ -269,6 +280,10 @@ class Redpacket extends \app\BaseController
 
                 //
                 $r4 = Db::name('imext_redpacket_send')->where(["client_msg_id" => $client_msg_id])->update(['receive_money' => Db::raw('receive_money + ' . $money), 'receive_num' => Db::raw('receive_num + ' . 1)]);
+                //如果是最后一个红包，设置状态为已领取完
+                if ($r1[0]["red_num"] - $r1[0]["receive_num"] == 1) {
+                    $r6 = Db::name('imext_redpacket_send')->where("client_msg_id", $client_msg_id)->update(['status' => 1]);
+                }
 
                 $r5 = Db::name('imext_redpacket_send')->where("client_msg_id", $client_msg_id)->select()->toArray();
                 Db::commit();
@@ -367,13 +382,22 @@ class Redpacket extends \app\BaseController
 
             if ($r0) {
                 Db::startTrans();
-                $userId = $r0[0]["user_id"];
-                $money = $r0[0]["total_money"];
                 try {
+                    $total_money = $r0[0]["total_money"];
+                    $red_num = $r0[0]["red_num"];
+                    $money = $total_money / $red_num;
+
+                    $out_user_id = $r0[0]["send_id"];
+
+                    $sql1 = array('client_msg_id' => $client_msg_id, 'rcv_id' => $rcv_id, 'money' => $money, 'status' => -1, 'create_at' => $time, 'remark' => $remark);
+                    $r1 = Db::name('imext_redpacket_receive')->insertGetId($sql1);
 
 
-                    //增加接受者钱
-                    $r1 = Db::name('imext_user')->where(["user_id" => $userId])->update(['money' => Db::raw('money + ' . $money)]);
+                    //如果是单个红包拒收后增加发送者钱
+                    if ($red_num == 1) {
+                        $r1 = Db::name('imext_user')->where(["user_id" => $out_user_id])->update(['money' => Db::raw('money + ' . $money)]);
+                        $r1 = Db::name('imext_redpacket_send')->where(["client_msg_id" => $client_msg_id])->update(['status' => 2]);
+                    }
 
                     $r2 = Db::name('imext_redpacket_send')->where(["client_msg_id" => $client_msg_id])->update(['status' => 2]);
 
@@ -490,5 +514,49 @@ class Redpacket extends \app\BaseController
             $this->error('操作失败');
         }
         $this->success();
+    }
+
+
+    /**
+     * 根据红包编号获取详细信息
+     */
+    #[Route('GET', '$')]
+    // #[PreAuthorize('hasPermi','imext:video:query')]
+    public function batchCheck($id)
+    {
+        $r1 = Db::name('imext_redpacket_send')->where([["status",'=', 0],['create_time','<=',time() - 24*3600]])->select()->toArray();
+        Logger::Log('检查过期红包：'. count($r1));
+        //如果红包创建超过24小时，自动退回未接收的金额
+        if ($r1) {
+            foreach ($r1 as $key => $value) {
+                Db::startTrans();
+                try {
+                    $total_money = $value["total_money"];
+                    $red_num = $value["red_num"];
+                    $receive_num = $value["receive_num"];
+                    $receive_money = $value["receive_money"];
+                    $left_num = $red_num - $receive_num;
+                    $left_money = $total_money - $receive_money;
+
+                    $out_user_id = $value["send_id"];
+
+                    //更新红包状态
+                    $r2 = Db::name('imext_redpacket_send')->where(["client_msg_id" => $value["client_msg_id"]])->update(['status' => 2]);
+                    //增加发送者钱
+                    if ($left_money > 0) {
+                        $r1 = Db::name('imext_user')->where(["user_id" => $out_user_id])->update(['money' => Db::raw('money + ' . $left_money)]);
+                    }
+
+                    Db::commit();
+                    Logger::Log('红包ID：'.$value["client_msg_id"].' 过期，退回金额：'.$left_money .'发送者：'.$out_user_id);
+                } catch (\Exception $e) {
+                    // 回滚事务
+                    Db::rollback();
+                    $Log_content = $e->getMessage();
+                    Logger::Log($Log_content);
+                }
+            }
+        }
+        $this->success(['count' => count($r1)]);
     }
 }

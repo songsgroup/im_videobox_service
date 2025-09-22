@@ -147,21 +147,21 @@ class UserBankModel extends \app\BaseModel
     {
         $recordData = [
             'user_id' => $data['user_id'] ?? '',
-            'name' => $data['name'] ?? '',
-            'card_id' => $data['card_id'] ?? 0,
-            'usdt_add' => $data['usdt_add'] ?? '',
-            'money' => $data['money'] ?? 0,
-            'local_money' => $data['local_money'] ?? 0,
-            'exchange_rate' => $data['exchange_rate'] ?? 0,
-            'z_money' => $data['z_money'] ?? 0,
-            's_charge' => $data['s_charge'] ?? 0,
-            'refuse' => $data['refuse'] ?? '',
-            'type' => $data['type'] ?? 1,
-            'order_id' => $data['order_id'] ?? '',
-            'status' => $data['status'] ?? 0,
-            'create_user' => $data['create_user'] ?? 'system',
-            'create_time' => date('Y-m-d H:i:s'),
-            'mark' => $data['mark'] ?? ''
+            'card_holder' => $data['card_holder'] ?? '',
+            'id_card' => $data['id_card'] ?? 0,
+            'bank_name' => $data['bank_name'] ?? '',
+            'branch' => $data['branch'] ?? '',
+            'bank_card_number' => $data['bank_card_number'] ?? '',
+            'mobile' => $data['mobile'] ?? '',
+            'add_date' => time(),
+            'is_default' => $data['is_default'] ?? 0,
+            // 'refuse' => $data['refuse'] ?? '',
+            // 'type' => $data['type'] ?? 1,
+            // 'order_id' => $data['order_id'] ?? '',
+            // 'status' => $data['status'] ?? 0,
+            // 'create_user' => $data['create_user'] ?? 'system',
+            // 'create_time' => date('Y-m-d H:i:s'),
+            // 'mark' => $data['mark'] ?? ''
         ];
         
         return self::create($recordData);
