@@ -64,10 +64,24 @@ class Withdraw extends \app\BaseController
         // 设置默认值
         $data['create_time'] = date('Y-m-d H:i:s');
         $data['create_user'] = $data['create_user'] ?? 'system';
-        
-        $data["order_id"] =$this->getOrderNo();
+
+        $data["order_id"] = $this->getOrderNo();
+
+        //按照规则，加判断
+
+        //提现需要设置个人拉新5人每天可以提100元内。45人每天可以提现500元，99人每天可以提现1000元。团队人数1000人以上随便提现。)
+        //
+
+
+        $r = Db::name('imext_user')->where("user_id", $data["userID"])->select()->toArray();
+
+        if ($r) {
+        }
+
+        $data["userId"] = $data["userID"];
 
         $r = $this->model->create($data);
+
 
         //
         $result = ['errCode' => 200, 'errMsg' => '', 'code' => 200, 'data' => $r, 'msg' => '成功'];
@@ -160,7 +174,7 @@ class Withdraw extends \app\BaseController
             $subbranch = $bankres[0]["branch"];
             $accountname = $bankres[0]["cardHolder"];
             $cardnumber = $bankres[0]["bankCardNumber"]; //卡号
-          
+
             //recharge($orderId,$bankname,$subbranch,$accountname,$cardnumber,$amount)
 
             $time = date('Y-m-d h:i:s');
@@ -198,10 +212,10 @@ class Withdraw extends \app\BaseController
                     exit;
                 } else {
                     Logger::Log('代收失败' . __METHOD__ . '->' . __LINE__ . $orderId);
-                 }
+                }
             } catch (\Exception $e) {
-                $msg=$e->getMessage();              
-             
+                $msg = $e->getMessage();
+
                 Logger::Log('代收失败 ' . __METHOD__ . '->' . __LINE__ . $msg);
             }
 
@@ -378,7 +392,7 @@ class Withdraw extends \app\BaseController
         ]);
     }
 
-     public function getOrderNo()
+    public function getOrderNo()
     {
         $result = "SO" . (date("YmdHms") . rand(1, 9) . rand(1, 9) . rand(1, 9) . rand(1, 9));
         return $result;
