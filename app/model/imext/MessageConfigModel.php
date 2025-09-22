@@ -1,7 +1,8 @@
 <?php
 
 namespace app\model\imext;
- 
+
+use think\Model;
 
 class MessageConfigModel extends \app\BaseModel
 { 
