@@ -161,7 +161,7 @@ class AutoImMsg extends \app\BaseController
                     'create_time' => date('Y-m-d H:i:s'),
                     'remark' => "播放扣款"
                 );
-                $r1 = Db::name('imext_money_record')->insertGetId($Rorders);
+                $r1 = Db::name('imext_rd')->insertGetId($Rorders);
 
                 Db::commit();
 
