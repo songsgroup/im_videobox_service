@@ -31,7 +31,7 @@ class WithdrawModel extends \app\BaseModel
         $m = self::order('id','desc');
         
         // 用户ID筛选
-        $userId && $m = $m->where('user_id','like','%'.$userId.'%');
+        $userId && $m = $m->where('user_id','=', $userId);
         
         // 用户姓名筛选
         $name && $m = $m->where('name','like','%'.$name.'%');

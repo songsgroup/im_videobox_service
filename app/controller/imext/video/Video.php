@@ -93,9 +93,11 @@ class Video extends \app\BaseController
                 $now   = time();
 
                 if ($now >= $start && $now <= $end) {
-                    $result = ['code' => 200, 'data' => true, 'msg' => $datacount];
+                   $result = ["errCode" =>200, 'code' => 200, 'data' => true, 'msg' => $datacount];
+                    // $this->success($datacount);
                 } else {
-                    $result = ['code' => -99, 'data' => false, 'msg' => '你的包月已经过期'];
+                    $result = ['code' => 200, 'data' => false, 'msg' => '你的包月已经过期'];
+                    // $this->error("你的包月已经过期");
                 }
             }
             // 如果是免费用户
@@ -104,17 +106,21 @@ class Video extends \app\BaseController
                     $result = ['code' => 200, 'data' => true, 'msg'  => $datacount];
                 } else {
                     //检查是不是充过钱
-                    if ($imExtUser["user_type"] == 0 && $imExtUser["view_long"] == 1) {
-                        Db::name('imext_user')
-                            ->where('user_id', $userId)
-                            ->update([
-                                'view_long' => 0
-                            ]);
-                            
-                         $result = ['code' => 200, 'data' => true, 'msg'  => $datacount];    
-                    } else {
-                        $result = ['code' => -99, 'data' => false, 'msg'  => $datacount];
-                    }
+                    // if ($imExtUser["user_type"] == 0 && $imExtUser["view_long"] == 1) {
+                    //     Db::name('imext_user')
+                    //         ->where('user_id', $userId)
+                    //         ->update([
+                    //             'view_long' => 0
+                    //         ]);
+
+                    //     $result = ['code' => 200, 'data' => true, 'msg'  => $datacount];
+                    //     // $this->success($datacount);
+                    // } else {
+                    //     $result = ['code' => 200, 'data' => false, 'msg'  => $datacount];
+                    //     // $this->error($datacount);
+                    // }
+
+                    $result = ['code' => 200, 'data' => false, 'msg'  => "你的免费视频已经看完！"];
                 }
             }
 
@@ -130,7 +136,8 @@ class Video extends \app\BaseController
             ];
             $r = $this->videoView->create($viewdata);
         } else {
-            $result = ['code' => 200, 'data' => false, 'msg'  => "用户不存在！"];
+            // $result = ['code' => 200, 'data' => false, 'msg'  => "用户不存在！"];
+            $this->error("用户不存在！");
         }
 
         return json($result);

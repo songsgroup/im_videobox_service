@@ -57,7 +57,7 @@ class BuyVideo extends \app\BaseController
             if ($inputMoney != "") {
                 //钱不够了。提示充值
                 if ($userMoney < $inputMoney) {
-                    $result = ['errCode' => -99,'errMsg' => '你的余额不足，请充值！', 'code' => -99, 'data' => false, 'msg' => '你的余额不足，请充值！'];
+                    $result = ['errCode' => -99, 'errMsg' => '你的余额不足，请充值！', 'code' => -99, 'data' => false, 'msg' => '你的余额不足，请充值！'];
                 } else {
                     Db::startTrans();
                     //减少发送者钱
@@ -67,8 +67,8 @@ class BuyVideo extends \app\BaseController
                             ->where('user_id', $userId)
                             ->update([
                                 'money' => Db::raw('money - ' . $inputMoney),
-                                'uesr_type' => $inputType,
-                                'view_long' =>1
+                                'user_type' => $inputType,
+                                'view_long' => 0
                             ]);
 
                         $Rorders = array(
@@ -103,30 +103,31 @@ class BuyVideo extends \app\BaseController
                         $r1 = Db::name('imext_money_record')->insertGetId($Rorders);
 
                         //如果是包月，写入包月的时间区间
-                        if($inputType==1){
+                        if ($inputType == 1) {
                             $now = date('Y-m-d H:i:s');
                             $nextMonth = date('Y-m-d H:i:s', strtotime('+1 month'));
 
                             Db::name('imext_user')
-                            ->where('user_id', $userId)
-                            ->update([                                
-                                'month_start' => $now,
-                                'month_end' =>$nextMonth
-                            ]);
+                                ->where('user_id', $userId)
+                                ->update([
+                                    'month_start' => $now,
+                                    'month_end' => $nextMonth
+                                ]);
                         }
-                        
+
                         //
-                        $result = ['errCode' => 200,'errMsg' => '付款成功','code' => 200, 'data' => true, 'msg' => "付款成功"];
+                        $result = ['errCode' => 200, 'errMsg' => '付款成功', 'code' => 200, 'data' => true, 'msg' => "付款成功"];
                         Db::commit();
                     } catch (\Exception $e) {
                         Db::rollback();
-                        $result = ['errCode' => -99,'errMsg' => $e->getMessage(),'code' => -99, 'data' => false, 'msg' => $e->getMessage()];
+                        $msg = $e->getMessage();
+                        $result = ['errCode' => -99, 'errMsg' => $e->getMessage(), 'code' => -99, 'data' => false, 'msg' =>  $msg];
                     }
                 }
             } else {
             }
         } else {
-            $result = ['errCode' => -99,'errMsg' =>"用户不存在！",'code' => -99, 'data' => false, 'msg'  => "用户不存在！"];
+            $result = ['errCode' => -99, 'errMsg' => "用户不存在！", 'code' => -99, 'data' => false, 'msg'  => "用户不存在！"];
         }
 
         return json($result);
